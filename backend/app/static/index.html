@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>AI语言学习助手</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --text-color: #2c3e50;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+        }
+
+        .container h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        select {
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            width: 200px;
+            font-size: 16px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #357abd;
+            transform: translateY(-1px);
+        }
+
+        .result-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            margin-top: 15px;
+        }
+
+        .result-content h3 {
+            color: var(--primary-color);
+            margin: 15px 0 10px;
+        }
+
+        .result-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .result-content li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            padding: 15px;
+            background-color: #fdf0f0;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #fad7d7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .exercise-content {
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .exercise-content h3 {
+            color: var(--primary-color);
+            margin: 25px 0 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .exercise-content strong {
+            color: var(--text-color);
+            font-weight: 600;
+            display: inline-block;
+            margin: 10px 0 5px;
+        }
+
+        .exercise-content em {
+            color: #666;
+            font-style: italic;
+        }
+
+        .exercise-content br {
+            margin-bottom: 8px;
+        }
+
+        .exercise-content p {
+            margin: 10px 0;
+        }
+
+        .exercise-content ul, .exercise-content ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+
+        .exercise-content li {
+            margin: 8px 0;
+        }
+
+        .exercise-content blockquote {
+            margin: 15px 0;
+            padding: 10px 20px;
+            border-left: 4px solid var(--primary-color);
+            background-color: #f8f9fa;
+        }
+
+        .page-layout {
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+
+        .tools-section {
+            flex: 1;
+            max-width: 650px;
+        }
+
+        .result-section {
+            position: sticky;
+            top: 20px;
+            width: 400px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .quick-nav {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .quick-nav button {
+            display: block;
+            width: 100%;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            text-align: left;
+            background: none;
+            color: var(--text-color);
+            font-weight: normal;
+        }
+
+        .quick-nav button:hover {
+            background-color: var(--bg-color);
+            transform: none;
+        }
+
+        .quick-nav button:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .page-layout {
+                flex-direction: column;
+            }
+            .tools-section {
+                max-width: none;
+            }
+            .result-section {
+                position: relative;
+                width: auto;
+                top: 0;
+            }
+            .quick-nav {
+                display: none;
+            }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI语言学习助手</h1>
+        <p>专业的语言学习分析和练习生成工具</p>
+    </div>
+
+    <div class="quick-nav">
+        <button onclick="scrollToSection('text-analysis')">📝 文本分析</button>
+        <button onclick="scrollToSection('exercise-gen')">📚 练习生成</button>
+        <button onclick="scrollToSection('plan-gen')">📋 教学计划</button>
+        <button onclick="scrollToSection('translation')">🔄 文本翻译</button>
+    </div>
+
+    <div class="page-layout">
+        <div class="tools-section">
+            <div class="container" id="text-analysis">
+                <h2>📝 文本分析</h2>
+                <div class="feature-description">
+                    输入任何英文文本，AI将帮助分析语法错误并提供改进建议
+                </div>
+                <div class="input-group">
+                    <label for="textInput">输入要分析的文本：</label>
+                    <textarea 
+                        id="textInput" 
+                        placeholder="例如：Yesterday I go to school and meet my friend..."
+                    ></textarea>
+                </div>
+                <button onclick="analyzeText()">开始分析</button>
+            </div>
+
+            <div class="container" id="exercise-gen">
+                <h2>📚 练习生成</h2>
+                <div class="feature-description">
+                    根据特定主题和难度级别，生成个性化的语言学习练习
+                </div>
+                <div class="input-group">
+                    <label for="topic">练习主题：</label>
+                    <input 
+                        type="text" 
+                        id="topic" 
+                        placeholder="例如：英语时态、被动语态、条件句等"
+                    >
+                </div>
+                <div class="input-group">
+                    <label for="level">难度级别：</label>
+                    <select id="level">
+                        <option value="beginner">初级 (A1-A2) - 基础语法和日常用语</option>
+                        <option value="intermediate">中级 (B1-B2) - 复杂语法和商务英语</option>
+                        <option value="advanced">高级 (C1-C2) - 学术写作和专业表达</option>
+                    </select>
+                </div>
+                <button onclick="generateExercise()">生成练习</button>
+            </div>
+
+            <div class="container" id="plan-gen">
+                <h2>📋 教学计划生成</h2>
+                <div class="feature-description">
+                    根据科目和级别生成详细的教学计划，包含教学目标、重点和课程安排
+                </div>
+                <div class="input-group">
+                    <label for="subject">教学科目：</label>
+                    <input 
+                        type="text" 
+                        id="subject" 
+                        placeholder="例如：英语写作、商务英语、口语训练等"
+                    >
+                </div>
+                <div class="input-group">
+                    <label for="planLevel">目标级别：</label>
+                    <select id="planLevel">
+                        <option value="beginner">初级 (A1-A2)</option>
+                        <option value="intermediate">中级 (B1-B2)</option>
+                        <option value="advanced">高级 (C1-C2)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="duration">计划周期：</label>
+                    <select id="duration">
+                        <option value="一个月">一个月</option>
+                        <option value="一学期" selected>一学期</option>
+                        <option value="一学年">一学年</option>
+                    </select>
+                </div>
+                <button onclick="generateTeachingPlan()">生成教学计划</button>
+            </div>
+
+            <div class="container" id="translation">
+                <h2>🔄 文本翻译</h2>
+                <div class="feature-description">
+                    智能翻译服务，支持多种语言之间的互译
+                </div>
+                <div class="input-group">
+                    <label for="translateInput">输入要翻译的文本：</label>
+                    <textarea 
+                        id="translateInput" 
+                        placeholder="请输入要翻译的文本..."
+                    ></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="targetLang">目标语言：</label>
+                    <select id="targetLang">
+                        <option value="中文">中文</option>
+                        <option value="英文">英文</option>
+                        <option value="日文">日文</option>
+                        <option value="韩文">韩文</option>
+                        <option value="法文">法文</option>
+                        <option value="德文">德文</option>
+                    </select>
+                </div>
+                <button onclick="translateText()">开始翻译</button>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <div class="container">
+                <h2>🔍 分析结果</h2>
+                <div id="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-top" onclick="scrollToTop()">↑</div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        function formatResult(data) {
+            if (typeof data === 'string') {
+                // 如果是字符串，直接显示
+                return data;
+            }
+            
+            const result = document.createElement('div');
+            result.className = 'result-content';
+            
+            // 处理文本分析的结果
+            if (data.corrections) {
+                const corrections = document.createElement('div');
+                corrections.innerHTML = data.corrections;
+                result.appendChild(corrections);
+                
+                // 处理难度等级
+                if (data.difficulty_level) {
+                    const difficulty = document.createElement('h3');
+                    difficulty.textContent = `难度等级: ${data.difficulty_level}`;
+                    result.appendChild(difficulty);
+                }
+                
+                // 处理建议
+                if (data.suggestions && Array.isArray(data.suggestions)) {
+                    const suggestionsTitle = document.createElement('h3');
+                    suggestionsTitle.textContent = '改进建议：';
+                    result.appendChild(suggestionsTitle);
+                    
+                    const suggestionsList = document.createElement('ul');
+                    data.suggestions.forEach(suggestion => {
+                        const li = document.createElement('li');
+                        li.textContent = suggestion;
+                        suggestionsList.appendChild(li);
+                    });
+                    result.appendChild(suggestionsList);
+                }
+            }
+            // 处理练习生成的结果
+            else if (data.content) {
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'exercise-content';
+                
+                // 处理可能包含HTML标签的内容
+                const contentDiv = document.createElement('div');
+                contentDiv.innerHTML = data.content
+                    .replace(/\n/g, '<br>') // 将换行符转换为HTML换行
+                    .replace(/练习(\d+)/g, '<h3>练习$1</h3>') // 将"练习1"等转换为标题
+                    .replace(/例子：/g, '<strong>例子：</strong>') // 加粗"例子："
+                    .replace(/答案：/g, '<strong>答案：</strong>') // 加粗"答案："
+                    .replace(/提示：/g, '<em>提示：</em>'); // 斜体"提示："
+                
+                contentWrapper.appendChild(contentDiv);
+                result.appendChild(contentWrapper);
+                
+                // 添加状态标签
+                if (data.status) {
+                    const statusBadge = document.createElement('div');
+                    statusBadge.className = `status-badge status-${data.status}`;
+                    statusBadge.textContent = data.status === 'success' ? '生成成功' : '生成失败';
+                    result.appendChild(statusBadge);
+                }
+            }
+            // 处理错误信息
+            else if (data.error) {
+                const error = document.createElement('div');
+                error.className = 'error-message';
+                error.textContent = data.error;
+                result.appendChild(error);
+            }
+            // 处理其他未知格式的数据
+            else {
+                const raw = document.createElement('pre');
+                raw.textContent = JSON.stringify(data, null, 2);
+                result.appendChild(raw);
+            }
+            
+            return result;
+        }
+
+        async function analyzeText() {
+            const text = document.getElementById('textInput').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">正在分析中</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/analyze-text`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(formatResult(data));
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = '错误：' + error.message;
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(errorDiv);
+                console.error('完整错误信息：', error);
+            }
+        }
+
+        async function generateExercise() {
+            const topic = document.getElementById('topic').value;
+            const level = document.getElementById('level').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">正在生成练习</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/generate-exercise`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ topic, level })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(formatResult(data));
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = '错误：' + error.message;
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(errorDiv);
+                console.error('完整错误信息：', error);
+            }
+        }
+
+        async function generateTeachingPlan() {
+            const subject = document.getElementById('subject').value;
+            const level = document.getElementById('planLevel').value;
+            const duration = document.getElementById('duration').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">正在生成教学计划</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/generate-teaching-plan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ subject, level, duration })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(formatResult(data));
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = '错误：' + error.message;
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(errorDiv);
+                console.error('完整错误信息：', error);
+            }
+        }
+
+        async function translateText() {
+            const text = document.getElementById('translateInput').value;
+            const targetLang = document.getElementById('targetLang').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">正在翻译</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text, target_lang: targetLang })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(formatResult(data));
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = '错误：' + error.message;
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(errorDiv);
+                console.error('完整错误信息：', error);
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onscroll = function() {
+            const scrollTop = document.querySelector('.scroll-top');
+            if (window.pageYOffset > 300) {
+                scrollTop.classList.add('visible');
+            } else {
+                scrollTop.classList.remove('visible');
+            }
+        };
+    </script>
+</body>
+</html> 

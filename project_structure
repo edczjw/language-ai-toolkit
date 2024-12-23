@@ -1,0 +1,12 @@
+language-ai-toolkit/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── routes/
+│   │   ├── models/
+│   │   └── services/
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── components/
+└── requirements.txt 
